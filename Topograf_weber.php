@@ -20,12 +20,12 @@ class Weber
     }
 
     public function clear(){
-    	$sql = "DELETE FROM ".$this->table." WHERE 1";
- 	mysql_query($sql);
+	$sql = "DELETE FROM ".$this->table." WHERE 1";
+	mysql_query($sql);
     }
 
     public function add($hash,$data){
-    	$count = count($data) - 1;
+	$count = count($data) - 1;
 	$z = 0;
 
 	$str = "INSERT INTO ".$this->table." SET ";
