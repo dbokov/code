@@ -1,6 +1,6 @@
 <?php
 
-// базовый класс парсинга данных
+// Mediatopograf.ru - базовый класс парсинга данных
 
 require_once('phpQuery/phpQuery.php');
 require_once("stat.php");
