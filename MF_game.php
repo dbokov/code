@@ -1,5 +1,7 @@
 <?php
 
+// MindFight - онлайн игра - мозговой штурм, по типу командной викторины, брейн ринга. Пока не запущена. Модель игры.
+
 class Game extends CActiveRecord
 {
 
@@ -8,41 +10,28 @@ class Game extends CActiveRecord
 		return parent::model($className);
 	}
 
-	/**
-	 * @return string the associated database table name
-	 */
 	public function tableName()
 	{
 		return 'Game';
 	}
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
 			array('id_league, type, id_style, title, mode, descr, money', 'required'),
 			array('id_league, type, id_style, mode, money', 'numerical', 'integerOnly'=>true),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
 			array('id, author, id_league, mode, type, id_style, date_start, date_finish, title, descr, money', 'safe', 'on'=>'search'),
 		);
 	}
 
-	/**
-	 * @return array relational rules.
-	 */
+
 	public function relations()
 	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
+
 		return array(
-            'style'=>array(self::BELONGS_TO, 'Style', 'id_style'),
-            'users'=>array(self::HAS_MANY, 'GameUsers', 'id_game'),
-            'levels'=>array(self::HAS_MANY, 'Level', 'id_game'),
+	            'style'=>array(self::BELONGS_TO, 'Style', 'id_style'),
+	            'users'=>array(self::HAS_MANY, 'GameUsers', 'id_game'),
+	            'levels'=>array(self::HAS_MANY, 'Level', 'id_game'),
         );
 	}
 
@@ -81,24 +70,22 @@ class Game extends CActiveRecord
         );
     }
 
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
+
 	public function attributeLabels()
 	{
 		return array(
 			'id' => '#',
 			'author' => 'Автор(ы)',
 			'id_league' => 'Лига',
-            // команды/одиночки
+            		// команды/одиночки
 			'type' => 'Тип',
 			'id_style' => 'Формат',
 			'date_start' => 'Время старта',
 			'date_finish' => 'Время финиша',
 			'title' => 'Название',
 			'descr' => 'Описание',
-            // прямая/параллельная
-            'mode' => 'Ход игры',
+            		// прямая/параллельная
+        		'mode' => 'Ход игры',
 			'money' => 'Взнос',
 		);
 	}
@@ -202,11 +189,6 @@ class Game extends CActiveRecord
         return strtr($this->title,$tr);
     }
 
-    public function getType(){
-        if($this->type=='1') $ret = '<img title="Одиночная игра (каждый сам за себя)" class="tooltip" style="border:0;" alt="Одиночная игра (каждый сам за себя)" src="/media/img/single.png"/>';
-        if($this->type=='2') $ret = '<img title="Командная игра (соберите команду минимум из 2-х человек для участия)" class="tooltip" style="border:0;" alt="Командная игра" src="/media/img/team.png"/>';
-        return $ret;
-    }
 
     public static function countByLeague($id) {
         return Game::model()->countByAttributes(array("id_league"=>$id));
@@ -310,17 +292,11 @@ class Game extends CActiveRecord
         return $models;
     }
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
-	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
 
+	
 		$criteria=new CDbCriteria;
-
 		$criteria->compare('id',$this->id);
 		$criteria->compare('author',$this->id_author);
 		$criteria->compare('id_league',$this->id_league);
@@ -330,9 +306,9 @@ class Game extends CActiveRecord
 		$criteria->compare('date_finish',$this->date_finish,true);
 		$criteria->compare('title',$this->title,true);
 		$criteria->compare('descr',$this->descr,true);
-        $criteria->compare('mode',$this->descr,true);
+		$criteria->compare('mode',$this->descr,true);
 		$criteria->compare('money',$this->money);
-
+	
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
