@@ -1,5 +1,7 @@
 <?php
 
+// базовый класс парсинга данных
+
 require_once('phpQuery/phpQuery.php');
 require_once("stat.php");
 
@@ -17,55 +19,33 @@ class Weber
 	return $str;
     }
 
-    public function clearstring2($str){
-	$str = preg_replace('/[^`\!\?|\'\"\+\-\*_@:.,;#\$%\^\&\(\)\{\}\/=\w\sА-Яа-я]/u','', $str);
-	return $str;
-    }
-
-    public function __construct(){
-        $this->proxy = 0;
-        $db_user = "root";
-        $db_pass = "gbdjcvfhnbyb";
-        $db_host = "localhost";
-        $db_name = "smm";
-
-        mysql_connect($db_host,$db_user,$db_pass);
-        mysql_select_db($db_name);
-  	mysql_query("SET NAMES cp1251");
-
-    }
-
-
     public function clear(){
     	$sql = "DELETE FROM ".$this->table." WHERE 1";
  	mysql_query($sql);
     }
 
     public function add($hash,$data){
-    		$count = count($data) - 1;
-		$z = 0;
+    	$count = count($data) - 1;
+	$z = 0;
 
-		$str = "INSERT INTO ".$this->table." SET ";
-        	foreach($data as $k=>$v){
-			$str.=$k."='".$v."'";
-			if($z<$count)
-			$str.=",";		
-			$z++;
-		}
-		
-		echo $str."<hr>";
-		mysql_query($str) or die(mysql_error());
+	$str = "INSERT INTO ".$this->table." SET ";
+	foreach($data as $k=>$v){
+		$str.=$k."='".$v."'";
+		if($z<$count)
+		$str.=",";		
+		$z++;
+	}
+	
+	mysql_query($str) or die(mysql_error());
 
     }
 
    public function addstat($hash,$data,$table){
-    		$count = count($data) - 1;
-		$z = 0;
+    	$count = count($data) - 1;
+	$z = 0;
 
-		$str = "INSERT INTO ".$table." SET date_add='".time()."',author='".$data['author']."'";
-        	echo $str."<hr>";
-		mysql_query($str) or die(mysql_error());
-
+	$str = "INSERT INTO ".$table." SET date_add='".time()."',author='".$data['author']."'";
+	mysql_query($str) or die(mysql_error());
     }
 
 
@@ -78,17 +58,17 @@ class Weber
     }
 
     public static function setquality($hash,$type,$quality){
-	// check before
+
 	$sql = "SELECT quality FROM quality WHERE type='".$type."' AND hash='".$hash."'";
 	$res = mysql_query($sql);
 	if(mysql_num_rows($res)){
 		$current = mysql_result($res,0);
-        	$sql = "UPDATE quality SET quality='".$quality."' WHERE hash='".$hash."' AND type='".$type."'";
+		$sql = "UPDATE quality SET quality='".$quality."' WHERE hash='".$hash."' AND type='".$type."'";
 		mysql_query($sql);
 		// change stat
 		if($quality==1) stat::up($type,"good");
 		if($quality==2) stat::up($type,"bad");
-
+	
 		if($current=="1") stat::down($type,"good");	
 		if($current=="2") stat::down($type,"bad");	
 		
