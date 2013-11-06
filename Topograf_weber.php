@@ -43,7 +43,7 @@ class Weber
     }
 
    public function addstat($hash,$data,$table){
-    	$count = count($data) - 1;
+	$count = count($data) - 1;
 	$z = 0;
 
 	$str = "INSERT INTO ".$table." SET date_add='".time()."',author='".$data['author']."'";
