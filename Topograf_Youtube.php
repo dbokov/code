@@ -1,5 +1,5 @@
 <?php
-// класс парсинга Ютуба
+// Mediatopograf.ru - класс парсинга Ютуба
 
 class youtube extends Weber {
 
