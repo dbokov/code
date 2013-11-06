@@ -36,7 +36,9 @@ class Weber
 		$z++;
 	}
 	
-	mysql_query($str) or die(mysql_error());
+	if(mysql_query($str)) $ret = 1; 
+	else $ret = 0;	
+	return $ret;
 
     }
 
@@ -45,7 +47,9 @@ class Weber
 	$z = 0;
 
 	$str = "INSERT INTO ".$table." SET date_add='".time()."',author='".$data['author']."'";
-	mysql_query($str) or die(mysql_error());
+	if(mysql_query($str)) $ret = 1; 
+	else $ret = 0;	
+	return $ret;
     }
 
 
