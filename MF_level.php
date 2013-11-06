@@ -1,3 +1,6 @@
+<?
+// MindFight - представление уровня
+?>
 <div id='level_content' class='level_content'>
 <span style='display:none;' id='level_id'><?= $model->id ?></span>
 <span style='display:none;' id='level_auto'><?= $model->getAuto(); ?></span>
