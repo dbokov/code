@@ -1,5 +1,6 @@
 <?php
-/*
+/* 
+  Модель пункта меню в CMS. Может содержать ссылки на разные типы контента и элемент-контейнер.
  * @property integer $id
  * @property string $type
  * @property integer $id_item
