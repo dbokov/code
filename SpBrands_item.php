@@ -4,57 +4,41 @@
 
 class Item extends CActiveRecord
 {
-	/**
-	 * Returns the static model of the specified AR class.
-	 * @param string $className active record class name.
-	 * @return Item the static model class
-	 */
+
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
 	}
+	
 
-	/**
-	 * @return string the associated database table name
-	 */
 	public function tableName()
 	{
 		return 'items';
 	}
 
-    public function getModelName()
-    {
-        return __CLASS__;
-    }
+	public function getModelName()
+	{
+		return __CLASS__;
+	}
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
+
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
 			array('id_collection, title', 'required'),
 			array('id_collection, price', 'numerical', 'integerOnly'=>true),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
 			array('id, id_collection, title, descr, price', 'safe', 'on'=>'search'),
 		);
 	}
 
-	/**
-	 * @return array relational rules.
-	 */
+
 	public function relations()
 	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
 		return array(
 			'options'=>array(self::HAS_MANY, 'Option', 'id_item'),
 			'collection'=>array(self::BELONGS_TO, 'Collection', 'id_collection'),
 			'orders'=>array(self::HAS_MANY, 'Order', 'id_item'),
-            'photos'=>array(self::HAS_MANY, 'Photo', 'id_item'),
+        		'photos'=>array(self::HAS_MANY, 'Photo', 'id_item'),
 		);
 	}
 
@@ -100,187 +84,177 @@ class Item extends CActiveRecord
 		return $price;	
 	}
 
-    public function getCollection(){
-        $collection = Collection::model()->findByPk($this->id_collection);
-        return $collection;
-    }
-
-
-    public function getTitle(){
-	$ret = $this->title;
-	mb_internal_encoding('UTF-8');
-    	if(strlen($this->title)>25) $ret = mb_substr($this->title,0,25)."...";
-	return $ret;
-    }
-
-    public function getImage($type='small'){
-        if(!sizeof($this->photos)) {
-            $photo_small = "/images/small_empty.jpg";
-            $photo_big = "/images/empty.jpg";
-        }
-        else {
-            $photo_small = "/images/items/sm_".$this->photos[0]->photo;
-            $photo_big =  "/images/items/".$this->photos[0]->photo;
-        }
-
-        if($type=='small') {
-            $ret = $photo_small;
-        }
-        if($type=='big'){
-            $ret = $photo_big;
-        }
-
-        return $ret;
-    }
-
-    public function getImages(){
-        $ret = array();
-        if(sizeof($this->photos)) {
-            foreach($this->photos as $photo) {
-                $ar['photo_small'] = "/images/items/sm_".$photo->photo;
-                $ar['photo_big'] =  "/images/items/".$photo->photo;
-                $ret[] = $ar;
-            }
-        }
-        return $ret;
-    }
-
-    public function hasColors(){
-        $ret = 0;
-        foreach($this->options as $opt) {
-            if($opt->label=='Цвет') $ret = 1;
-        }
-        return $ret;
-    }
-
-
-    public function hasSizes(){
-        $ret = 0;
-        foreach($this->options as $opt) {
-            if($opt->label=='Размер') $ret = 1;
-        }
-        return $ret;
-    }
-
-
-    public function getNumber(){
-        return $this->id_collection."-".$this->id;
-    }
-
-    public function applyFilters($models,$filters){
-        foreach($filters as $k=>$filter) {
-
-            if($k=="price") {
-                $pr = explode("_",$filter);
-                $min = $pr[0];
-                $max = $pr[1];
-                foreach($models as $model){
-                    $price = $model->getPrice();
-                    if($price>=$min && $price<=$max) {  $data[] =  $model; }
-                }
-
-                $models = $data;
-                unset($data);
-            }
-
-            if($k=="size") {
-                foreach($models as $model){
-                    foreach($model->options as $opt){
-                        if($opt->label=="Размер") {
-                            if($opt->option == $filter) { $data[] = $model; }
-                         }
-                    }
-                }
-
-                $models = $data;
-                unset($data);
-            }
-
-
-            if($k=="color") {
-                foreach($models as $model){
-                    foreach($model->options as $opt){
-                        if($opt->label=="Цвет") {
-                            if($opt->option == $filter) $data[] = $model;
-                        }
-                    }
-                }
-
-                $models = $data;
-                unset($data);
-            }
-
-            if($k=="brand") {
-                foreach($models as $model){
-                    if($model->collection->id_brand==$filter) $data[] = $model;
-                }
-                $models = $data;
-                unset($data);
-            }
-
-        }
-
-        return $models;
-    }
-
-    public static function resetFilter($url,$type){
-        $data = $_GET;
-        unset($data[$type]);
-        unset($data['name']);
-
-        if(sizeof($data)) {
-            foreach($data as $k=>$v){
-                $params[] = $k."=".$v;
-            }
-            $ret =  $url."?".join("&",$params);
-        }
-        else $ret = $url;
-        return $ret;
-    }
-
-    public static function getNew(){
-        $criteria = new CDbCriteria;
-        $criteria->order = 'id DESC';
-        $criteria->limit = 12;
-        $models = Item::model()->findAll($criteria);
-        return $models;
-    }
-
-
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
+	public function getCollection(){
+		$collection = Collection::model()->findByPk($this->id_collection);
+		return $collection;
+	}
+	
+	
+	public function getTitle(){
+		$ret = $this->title;
+		mb_internal_encoding('UTF-8');
+		if(strlen($this->title)>25) $ret = mb_substr($this->title,0,25)."...";
+		return $ret;
+	}
+	
+	public function getImage($type='small'){
+		if(!sizeof($this->photos)) {
+			$photo_small = "/images/small_empty.jpg";
+			$photo_big = "/images/empty.jpg";
+			}
+		else {
+			$photo_small = "/images/items/sm_".$this->photos[0]->photo;
+			$photo_big =  "/images/items/".$this->photos[0]->photo;
+		}
+	
+		if($type=='small') {
+			$ret = $photo_small;
+		}
+		if($type=='big'){
+			$ret = $photo_big;
+		}
+	
+		return $ret;
+	}
+	
+	public function getImages(){
+		$ret = array();
+		if(sizeof($this->photos)) {
+			foreach($this->photos as $photo) {
+				$ar['photo_small'] = "/images/items/sm_".$photo->photo;
+				$ar['photo_big'] =  "/images/items/".$photo->photo;
+				$ret[] = $ar;
+			}
+		}
+		return $ret;
+	}
+	
+	public function hasColors(){
+		$ret = 0;
+		foreach($this->options as $opt) {
+			if($opt->label=='Цвет') $ret = 1;
+		}
+		return $ret;
+	}
+	
+	
+	public function hasSizes(){
+		$ret = 0;
+		foreach($this->options as $opt) {
+			if($opt->label=='Размер') $ret = 1;
+		}
+		return $ret;
+	}
+	
+	
+	public function getNumber(){
+		return $this->id_collection."-".$this->id;
+	}
+	
+	public function applyFilters($models,$filters){
+		foreach($filters as $k=>$filter) {
+		
+			if($k=="price") {
+				$pr = explode("_",$filter);
+				$min = $pr[0];
+				$max = $pr[1];
+				foreach($models as $model){
+					$price = $model->getPrice();
+					if($price>=$min && $price<=$max)  $data[] =  $model; 
+				}
+				
+				$models = $data;
+				unset($data);
+			}
+			
+			if($k=="size") {
+				foreach($models as $model){
+					foreach($model->options as $opt){
+						if($opt->label=="Размер") {
+						    if($opt->option == $filter)  $data[] = $model; 
+						 }
+					}
+				}
+			
+				$models = $data;
+				unset($data);
+			}
+		
+			
+			if($k=="color") {
+				foreach($models as $model){
+					foreach($model->options as $opt){
+						if($opt->label=="Цвет") {
+						    if($opt->option == $filter) $data[] = $model;
+						}
+					}
+				}
+			
+				$models = $data;
+				unset($data);
+			}
+		
+			if($k=="brand") {
+				foreach($models as $model){
+					if($model->collection->id_brand==$filter) $data[] = $model;
+				}
+				$models = $data;
+				unset($data);
+			}
+		
+		}
+		
+		return $models;
+	}
+	
+	public static function resetFilter($url,$type){
+		$data = $_GET;
+		unset($data[$type]);
+		unset($data['name']);
+		
+		if(sizeof($data)) {
+			foreach($data as $k=>$v){
+				$params[] = $k."=".$v;
+			}
+			$ret =  $url."?".join("&",$params);
+		}
+		else $ret = $url;
+		return $ret;
+	}
+	
+	public static function getNew(){
+		$criteria = new CDbCriteria;
+		$criteria->order = 'id DESC';
+		$criteria->limit = 12;
+		$models = Item::model()->findAll($criteria);
+		return $models;
+	}
+	
+	
 	public function attributeLabels()
-	{
+		{
 		return array(
 			'id' => 'Номер',
 			'id_collection' => 'Номер коллекции',
 			'title' => 'Артикул',
 			'descr' => 'Описание',
 			'price' => 'Цена',
-            'photo' => 'Фото',
+			'photo' => 'Фото',
 		);
 	}
-
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
-	 */
-	public function search()
-	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
+	
+	public function search(){
 
 		$criteria=new CDbCriteria;
-
+		
 		$criteria->compare('id',$this->id);
 		$criteria->compare('id_collection',$this->id_collection);
 		$criteria->compare('title',$this->title);
 		$criteria->compare('descr',$this->descr,true);
 		$criteria->compare('price',$this->price);
-
+		
 		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
+		'criteria'=>$criteria,
 		));
 	}
 }
